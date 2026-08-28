@@ -1,0 +1,31 @@
+name: 自動化測試
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Unit 與 Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: 取得程式碼
+        uses: actions/checkout@v4
+
+      - name: 設定 Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: 安裝相依套件
+        run: npm ci
+
+      - name: 執行 Unit Test
+        run: npm run test:unit
+
+      - name: 執行 Integration Test
+        run: npm run test:integration
