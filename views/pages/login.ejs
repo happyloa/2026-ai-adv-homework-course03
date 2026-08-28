@@ -1,0 +1,33 @@
+<div id="app" class="mx-auto flex min-h-[62vh] max-w-5xl items-center py-4 sm:py-8">
+  <div class="grid w-full overflow-hidden rounded-[2rem] bg-paper shadow-[0_22px_56px_rgba(64,33,37,0.12)] md:grid-cols-[0.88fr_1.12fr]">
+    <aside class="relative hidden overflow-hidden bg-wine p-10 text-white md:block">
+      <img src="/images/flower-life-bouquet.png" alt="花藝花束" class="absolute inset-0 h-full w-full object-cover opacity-35" />
+      <div class="absolute inset-0 bg-gradient-to-b from-wine/55 via-wine/70 to-wine"></div>
+      <div class="relative flex h-full flex-col justify-between"><p class="font-display text-xl font-bold tracking-[0.13em]">花漾生活</p><div><p class="text-xs font-bold tracking-[0.18em] text-rose-light">FLOWERS FOR EVERY MOMENT</p><h1 class="font-display mt-4 text-4xl font-bold leading-[1.5] tracking-[0.12em]">讓每個重要時刻，<br>都有花相伴。</h1><p class="mt-5 text-sm leading-7 text-white/70">登入後可追蹤訂單、安心完成綠界付款，並保存每一份心意。</p></div><p class="text-xs text-white/55">Fresh flowers, thoughtfully delivered.</p></div>
+    </aside>
+
+    <section class="px-6 py-9 sm:px-10 sm:py-12">
+      <p class="page-kicker">WELCOME BACK</p>
+      <h2 class="font-display mt-3 text-3xl font-bold tracking-[0.1em] text-wine">{{ activeTab === 'login' ? '回到花漾生活' : '建立你的花禮帳號' }}</h2>
+      <p class="mt-3 text-sm leading-6 text-text-secondary">{{ activeTab === 'login' ? '登入後即可查看訂單與完成付款。' : '註冊後，馬上開始挑選你的第一束花。' }}</p>
+
+      <div class="mt-7 grid grid-cols-2 rounded-full border border-[#e1d3cc] bg-[#fffaf7] p-1">
+        <button @click="activeTab = 'login'; errors = {}" class="rounded-full py-2.5 text-sm font-bold transition" :class="activeTab === 'login' ? 'bg-wine text-white shadow-sm' : 'text-text-secondary hover:text-rose-primary'" data-testid="login-tab">登入</button>
+        <button @click="activeTab = 'register'; errors = {}" class="rounded-full py-2.5 text-sm font-bold transition" :class="activeTab === 'register' ? 'bg-wine text-white shadow-sm' : 'text-text-secondary hover:text-rose-primary'" data-testid="register-tab">註冊</button>
+      </div>
+
+      <form v-if="activeTab === 'login'" class="mt-7 space-y-5" @submit.prevent="handleLogin" novalidate>
+        <div><label for="login-email" class="field-label">Email</label><input id="login-email" v-model="loginForm.email" type="email" autocomplete="email" placeholder="name@example.com" class="field-input" :class="{ '!border-red-400 !bg-red-50/40': errors.email }" data-testid="login-email" /><p v-if="errors.email" class="mt-1.5 text-xs text-red-500">{{ errors.email }}</p></div>
+        <div><label for="login-password" class="field-label">密碼</label><input id="login-password" v-model="loginForm.password" type="password" autocomplete="current-password" placeholder="請輸入密碼" class="field-input" :class="{ '!border-red-400 !bg-red-50/40': errors.password }" data-testid="login-password" /><p v-if="errors.password" class="mt-1.5 text-xs text-red-500">{{ errors.password }}</p></div>
+        <button type="submit" :disabled="submitting" class="primary-button w-full" data-testid="login-submit">{{ submitting ? '正在登入…' : '登入並繼續' }}</button>
+      </form>
+
+      <form v-else class="mt-7 space-y-5" @submit.prevent="handleRegister" novalidate>
+        <div><label for="register-name" class="field-label">姓名</label><input id="register-name" v-model="registerForm.name" type="text" autocomplete="name" placeholder="請輸入姓名" class="field-input" :class="{ '!border-red-400 !bg-red-50/40': errors.name }" data-testid="register-name" /><p v-if="errors.name" class="mt-1.5 text-xs text-red-500">{{ errors.name }}</p></div>
+        <div><label for="register-email" class="field-label">Email</label><input id="register-email" v-model="registerForm.email" type="email" autocomplete="email" placeholder="name@example.com" class="field-input" :class="{ '!border-red-400 !bg-red-50/40': errors.email }" data-testid="register-email" /><p v-if="errors.email" class="mt-1.5 text-xs text-red-500">{{ errors.email }}</p></div>
+        <div><label for="register-password" class="field-label">密碼</label><input id="register-password" v-model="registerForm.password" type="password" autocomplete="new-password" placeholder="至少 6 個字元" class="field-input" :class="{ '!border-red-400 !bg-red-50/40': errors.password }" data-testid="register-password" /><p v-if="errors.password" class="mt-1.5 text-xs text-red-500">{{ errors.password }}</p></div>
+        <button type="submit" :disabled="submitting" class="primary-button w-full" data-testid="register-submit">{{ submitting ? '正在建立帳號…' : '建立帳號並繼續' }}</button>
+      </form>
+    </section>
+  </div>
+</div>

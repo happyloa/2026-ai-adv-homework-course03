@@ -1,0 +1,79 @@
+<div id="app" data-order-id="<%= orderId %>" data-payment-result="<%= paymentResult %>">
+  <div v-if="loading" class="flex justify-center py-24">
+    <div class="h-9 w-9 animate-spin rounded-full border-[3px] border-rose-primary border-t-transparent"></div>
+  </div>
+
+  <template v-else-if="order">
+    <div class="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+      <div>
+        <p class="page-kicker">ORDER CONFIRMATION</p>
+        <h1 class="font-display mt-3 text-3xl font-bold tracking-[0.1em] text-wine sm:text-4xl">{{ isPaymentComplete ? '謝謝你，花禮已準備出發' : '訂單已為你保留' }}</h1>
+        <p class="mt-3 text-sm text-text-secondary">訂單編號 <span class="font-bold text-wine">{{ order.order_no }}</span> ・ {{ new Date(order.created_at).toLocaleDateString('zh-TW') }}</p>
+      </div>
+      <span class="status-pill self-start sm:self-auto" :class="statusMap[order.status]?.cls || 'bg-gray-100 text-gray-600'">{{ statusMap[order.status]?.label || order.status }}</span>
+    </div>
+
+    <section v-if="isPaymentComplete" class="soft-card-dark relative mb-8 overflow-hidden px-6 py-8 text-white sm:px-9 sm:py-10" data-testid="payment-success">
+      <div class="absolute -right-12 -top-16 h-56 w-56 rounded-full bg-rose-light/10 blur-3xl"></div>
+      <div class="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-start gap-4">
+          <span class="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#e8efe3] text-2xl text-olive">✓</span>
+          <div><p class="text-xs font-bold tracking-[0.15em] text-rose-light">PAYMENT COMPLETE</p><h2 class="font-display mt-1 text-2xl font-bold tracking-[0.08em]">付款完成，謝謝你的心意</h2><p class="mt-2 text-sm leading-6 text-white/72">我們已收到你的訂單，花藝師會依配送安排細心完成這束花禮。</p></div>
+        </div>
+        <a href="/" class="rounded-full border border-white/30 px-4 py-2 text-center text-xs font-bold transition hover:bg-white/10">繼續挑選花禮</a>
+      </div>
+    </section>
+
+    <div v-else-if="paymentResult && paymentMessages[paymentResult]" class="mb-8 rounded-2xl border p-4 text-sm" :class="paymentMessages[paymentResult].cls">{{ paymentMessages[paymentResult].text }}</div>
+
+    <div class="grid gap-7 lg:grid-cols-[minmax(0,1.08fr)_minmax(320px,0.72fr)] lg:gap-10">
+      <div class="space-y-7">
+        <section class="soft-card overflow-hidden">
+          <div class="flex items-center justify-between border-b border-[#eee3de] px-6 py-5 sm:px-7"><h2 class="font-display text-xl font-bold tracking-[0.08em] text-wine">花禮明細</h2><span class="text-xs text-text-muted">共 {{ order.items.length }} 種花禮</span></div>
+          <div class="divide-y divide-[#f0e6e1] px-6 sm:px-7">
+            <div v-for="item in order.items" :key="item.id" class="flex items-center justify-between gap-5 py-5">
+              <div><p class="text-sm font-bold text-wine">{{ item.product_name }}</p><p class="mt-1 text-xs text-text-muted">NT$ {{ item.product_price.toLocaleString() }} × {{ item.quantity }}</p></div>
+              <p class="whitespace-nowrap text-sm font-bold text-text-secondary">NT$ {{ (item.product_price * item.quantity).toLocaleString() }}</p>
+            </div>
+          </div>
+          <div class="flex items-end justify-between border-t border-[#eaded8] bg-[#fffaf7] px-6 py-5 sm:px-7"><span class="font-bold text-wine">訂單總計</span><span class="font-display text-2xl font-bold text-rose-primary">NT$ {{ order.total_amount.toLocaleString() }}</span></div>
+        </section>
+
+        <section class="soft-card px-6 py-6 sm:px-7">
+          <div class="flex items-center justify-between"><h2 class="font-display text-xl font-bold tracking-[0.08em] text-wine">配送資訊</h2><span class="text-rose-primary">✦</span></div>
+          <dl class="mt-5 grid gap-4 text-sm sm:grid-cols-3">
+            <div><dt class="text-xs text-text-muted">收件人</dt><dd class="mt-1 font-bold text-wine">{{ order.recipient_name }}</dd></div>
+            <div><dt class="text-xs text-text-muted">Email</dt><dd class="mt-1 break-all text-text-secondary">{{ order.recipient_email }}</dd></div>
+            <div><dt class="text-xs text-text-muted">收件地址</dt><dd class="mt-1 leading-6 text-text-secondary">{{ order.recipient_address }}</dd></div>
+          </dl>
+        </section>
+      </div>
+
+      <aside class="h-fit lg:sticky lg:top-28">
+        <div class="soft-card overflow-hidden">
+          <div class="border-b border-[#eee3de] px-6 py-5"><p class="text-[10px] font-bold tracking-[0.15em] text-text-muted">PAYMENT STATUS</p><h2 class="font-display mt-1 text-xl font-bold tracking-[0.08em] text-wine">付款方式</h2></div>
+          <div class="px-6 py-6">
+            <div class="rounded-2xl bg-olive-light/60 px-4 py-4"><div class="flex items-center gap-3"><span class="grid h-9 w-9 place-items-center rounded-full bg-white text-olive">✓</span><div><p class="text-sm font-bold text-wine">綠界科技安全付款</p><p class="mt-1 text-xs text-text-secondary">SSL 加密交易，安心完成付款</p></div></div></div>
+            <template v-if="order.status === 'pending'">
+              <p class="mt-5 text-sm leading-7 text-text-secondary">訂單已建立，請在綠界付款頁完成交易。付款完成後會自動回到此頁。</p>
+              <button @click="handleEcpay" :disabled="paying" class="ecpay-button mt-6 w-full" data-testid="ecpay-pay-button">
+                <span v-if="paying" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                <svg v-else aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3.75 4.5 7.5v4.65c0 4.13 3.2 6.97 7.5 8.1 4.3-1.13 7.5-3.97 7.5-8.1V7.5L12 3.75Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m8.75 12 2.05 2.05 4.45-4.45"/></svg>
+                {{ paying ? '正在安全轉址…' : '前往綠界安全付款' }}
+              </button>
+            </template>
+            <template v-else-if="order.status === 'paid'">
+              <p class="mt-5 text-sm leading-7 text-text-secondary">付款已確認完成。我們將透過 Email 通知配送進度。</p>
+              <a href="/orders" class="primary-button mt-6 w-full !bg-wine">查看所有訂單</a>
+            </template>
+            <template v-else>
+              <p class="mt-5 text-sm leading-7 text-text-secondary">這筆付款尚未完成，請重新確認付款資訊或建立新的訂單。</p>
+              <a href="/cart" class="primary-button mt-6 w-full">返回購物袋</a>
+            </template>
+          </div>
+        </div>
+        <p class="mt-4 text-center text-xs text-text-muted">付款問題？請聯繫花漾生活客服，我們會協助你完成訂單。</p>
+      </aside>
+    </div>
+  </template>
+</div>

@@ -1,0 +1,77 @@
+<div id="app">
+  <div class="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+    <div>
+      <p class="page-kicker">SECURE CHECKOUT</p>
+      <h1 class="font-display mt-3 text-3xl font-bold tracking-[0.1em] text-wine sm:text-4xl">完成你的花禮</h1>
+    </div>
+    <div class="flex items-center gap-3 text-xs sm:text-sm" aria-label="結帳進度">
+      <div class="checkout-step"><span class="checkout-step__number">1</span><span>購物袋</span></div>
+      <span class="h-px w-5 bg-[#d9cbc5]"></span>
+      <div class="checkout-step checkout-step--active"><span class="checkout-step__number">2</span><span>填寫資料</span></div>
+      <span class="h-px w-5 bg-[#d9cbc5]"></span>
+      <div class="checkout-step"><span class="checkout-step__number">3</span><span>安全付款</span></div>
+    </div>
+  </div>
+
+  <div v-if="loading" class="flex justify-center py-24">
+    <div class="h-9 w-9 animate-spin rounded-full border-[3px] border-rose-primary border-t-transparent"></div>
+  </div>
+
+  <div v-else class="grid gap-7 lg:grid-cols-[minmax(0,1.25fr)_minmax(330px,0.75fr)] lg:gap-10">
+    <section class="soft-card overflow-hidden">
+      <div class="border-b border-[#eee3de] px-6 py-5 sm:px-8">
+        <h2 class="font-display text-xl font-bold tracking-[0.08em] text-wine">收件資訊</h2>
+        <p class="mt-1 text-xs text-text-muted">這些資訊只會用於配送與訂單通知。</p>
+      </div>
+      <form class="space-y-5 px-6 py-7 sm:px-8" @submit.prevent="submitOrder" novalidate>
+        <div>
+          <label for="recipient-name" class="field-label">收件人姓名 <span class="text-rose-primary">*</span></label>
+          <input id="recipient-name" v-model="form.recipientName" type="text" autocomplete="name" placeholder="請輸入收件人姓名" class="field-input" :class="{ '!border-red-400 !bg-red-50/40': errors.recipientName }" data-testid="recipient-name" />
+          <p v-if="errors.recipientName" class="mt-1.5 text-xs text-red-500">{{ errors.recipientName }}</p>
+        </div>
+        <div>
+          <label for="recipient-email" class="field-label">Email <span class="text-rose-primary">*</span></label>
+          <input id="recipient-email" v-model="form.recipientEmail" type="email" autocomplete="email" placeholder="name@example.com" class="field-input" :class="{ '!border-red-400 !bg-red-50/40': errors.recipientEmail }" data-testid="recipient-email" />
+          <p v-if="errors.recipientEmail" class="mt-1.5 text-xs text-red-500">{{ errors.recipientEmail }}</p>
+        </div>
+        <div>
+          <label for="recipient-address" class="field-label">收件地址 <span class="text-rose-primary">*</span></label>
+          <input id="recipient-address" v-model="form.recipientAddress" type="text" autocomplete="street-address" placeholder="請輸入完整配送地址" class="field-input" :class="{ '!border-red-400 !bg-red-50/40': errors.recipientAddress }" data-testid="recipient-address" />
+          <p v-if="errors.recipientAddress" class="mt-1.5 text-xs text-red-500">{{ errors.recipientAddress }}</p>
+        </div>
+
+        <div class="rounded-2xl bg-blush/70 px-4 py-4 text-xs leading-6 text-text-secondary">
+          <p class="font-bold text-wine">貼心提醒</p>
+          <p class="mt-1">請確認收件資訊正確；完成訂單後會前往綠界科技的加密付款頁面。</p>
+        </div>
+
+        <button type="submit" :disabled="submitting" class="primary-button w-full" data-testid="checkout-submit">
+          <span v-if="submitting" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+          {{ submitting ? '正在建立訂單…' : '確認資訊，前往付款' }}
+        </button>
+      </form>
+    </section>
+
+    <aside class="h-fit lg:sticky lg:top-28">
+      <div class="soft-card overflow-hidden">
+        <div class="flex items-center justify-between border-b border-[#eee3de] px-6 py-5">
+          <h2 class="font-display text-xl font-bold tracking-[0.08em] text-wine">訂單摘要</h2>
+          <span class="rounded-full bg-olive-light px-2.5 py-1 text-[10px] font-bold tracking-[0.08em] text-olive">安心配送</span>
+        </div>
+        <div class="space-y-4 px-6 py-5">
+          <div v-for="item in cartItems" :key="item.id" class="flex items-center gap-3">
+            <img :src="item.product.image_url || '/images/flower-life-bouquet.png'" :alt="item.product.name" class="h-14 w-14 rounded-xl object-cover" />
+            <div class="min-w-0 flex-1"><p class="truncate text-sm font-bold text-wine">{{ item.product.name }}</p><p class="mt-1 text-xs text-text-muted">數量 {{ item.quantity }}</p></div>
+            <p class="whitespace-nowrap text-sm font-bold text-text-secondary">NT$ {{ (item.product.price * item.quantity).toLocaleString() }}</p>
+          </div>
+        </div>
+        <div class="space-y-3 border-t border-dashed border-[#e0d2cc] px-6 py-5 text-sm">
+          <div class="flex justify-between text-text-secondary"><span>商品小計</span><span>NT$ {{ cartTotal.toLocaleString() }}</span></div>
+          <div class="flex justify-between text-text-secondary"><span>配送運費</span><span>{{ cartTotal >= 500 ? '免運' : 'NT$ 150' }}</span></div>
+          <div class="flex items-end justify-between border-t border-[#eaded8] pt-4"><span class="font-bold text-wine">總計</span><span class="font-display text-2xl font-bold text-rose-primary">NT$ {{ (cartTotal + (cartTotal >= 500 ? 0 : 150)).toLocaleString() }}</span></div>
+        </div>
+      </div>
+      <div class="mt-4 flex items-center justify-center gap-2 text-xs text-text-muted"><span class="grid h-5 w-5 place-items-center rounded-full bg-olive-light text-olive">✓</span> 綠界科技 SSL 加密交易</div>
+    </aside>
+  </div>
+</div>

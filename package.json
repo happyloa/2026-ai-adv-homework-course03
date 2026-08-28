@@ -1,0 +1,41 @@
+{
+  "name": "backend-project",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "start": "npm run css:build && node server.js",
+    "dev:server": "node server.js",
+    "dev:css": "npx @tailwindcss/cli -i public/css/input.css -o public/css/output.css --watch",
+    "css:build": "npx @tailwindcss/cli -i public/css/input.css -o public/css/output.css --minify",
+    "openapi": "node generate-openapi.js",
+    "test": "vitest run",
+    "design:capture": "node scripts/capture-design.cjs",
+    "test:e2e": "node scripts/run-e2e.cjs",
+    "test:e2e:headed": "node scripts/run-e2e.cjs --headed",
+    "recording:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-recording-environment.ps1",
+    "recording:check": "node scripts/check-recording-readiness.cjs",
+    "recording:flow": "node scripts/record-payment-flow.cjs",
+    "recording:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/stop-recording-environment.ps1"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "swagger-jsdoc": "^6.3.0",
+    "uuid": "^14.0.1",
+    "vue": "^3.5.40"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@tailwindcss/cli": "^4.3.3",
+    "supertest": "^7.2.2",
+    "tailwindcss": "^4.3.3",
+    "vitest": "^4.1.10"
+  }
+}

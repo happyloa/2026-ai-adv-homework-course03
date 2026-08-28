@@ -1,0 +1,117 @@
+<div id="app" class="space-y-14 sm:space-y-20">
+  <section class="soft-card-dark relative overflow-hidden px-6 py-9 text-white sm:px-10 sm:py-12 lg:px-14 lg:py-16">
+    <div class="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-rose-light/10 blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-24 left-[38%] h-56 w-56 rounded-full bg-apricot/10 blur-3xl"></div>
+    <div class="relative grid items-center gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+      <div class="order-2 lg:order-1">
+        <p class="page-kicker !text-rose-light">A GIFT, IN FULL BLOOM</p>
+        <h1 class="font-display mt-5 max-w-xl text-4xl font-bold leading-[1.35] tracking-[0.08em] sm:text-5xl lg:text-[3.65rem]">
+          把想說的話，<br>交給一束花。
+        </h1>
+        <p class="mt-5 max-w-lg text-sm leading-7 text-white/70 sm:text-base">
+          嚴選當季花材、由花藝師親手完成。從挑選到付款，每一個細節都溫柔而安心。
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <a href="#products" class="primary-button !bg-[#f8ede6] !text-wine !shadow-none hover:!bg-white">探索花禮 <span aria-hidden="true">→</span></a>
+          <span class="text-xs tracking-[0.12em] text-white/60">今日下單・台北市區配送</span>
+        </div>
+      </div>
+      <div class="order-1 relative mx-auto w-full max-w-xl lg:order-2">
+        <div class="absolute -left-4 -top-4 h-full w-full rounded-[2rem] border border-white/20"></div>
+        <img
+          src="/images/flower-life-bouquet.png"
+          alt="粉色玫瑰花禮"
+          class="relative aspect-[5/4] w-full rounded-[1.65rem] object-cover shadow-2xl shadow-black/20"
+        />
+        <div class="absolute -bottom-5 -left-3 rounded-2xl border border-white/15 bg-wine/85 px-4 py-3 backdrop-blur sm:-left-6 sm:px-5">
+          <p class="text-[10px] tracking-[0.16em] text-rose-light">THIS SEASON</p>
+          <p class="mt-1 text-sm font-bold tracking-wide">柔粉時光花束</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid gap-4 sm:grid-cols-3">
+    <div class="soft-card flex items-center gap-4 px-5 py-5">
+      <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blush text-lg text-rose-primary">✦</span>
+      <div><p class="text-sm font-bold text-wine">新鮮花材</p><p class="mt-1 text-xs text-text-muted">每週兩次產地直送</p></div>
+    </div>
+    <div class="soft-card flex items-center gap-4 px-5 py-5">
+      <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blush text-lg text-rose-primary">♡</span>
+      <div><p class="text-sm font-bold text-wine">手工設計</p><p class="mt-1 text-xs text-text-muted">專屬花藝師細緻包裝</p></div>
+    </div>
+    <div class="soft-card flex items-center gap-4 px-5 py-5">
+      <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-olive-light text-lg text-olive">✓</span>
+      <div><p class="text-sm font-bold text-wine">安心付款</p><p class="mt-1 text-xs text-text-muted">綠界科技加密交易</p></div>
+    </div>
+  </section>
+
+  <section id="products" class="scroll-mt-32">
+    <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+      <div>
+        <p class="page-kicker">CURATED FLOWERS</p>
+        <h2 class="font-display mt-3 text-3xl font-bold tracking-[0.1em] text-wine sm:text-4xl">本季精選花禮</h2>
+        <p class="mt-3 text-sm leading-6 text-text-secondary">讓每一次送禮，都成為值得珍藏的心意。</p>
+      </div>
+      <a href="#all-products" class="self-start text-sm font-bold text-rose-primary transition hover:text-rose-dark sm:self-auto">瀏覽所有花禮 <span aria-hidden="true">→</span></a>
+    </div>
+
+    <div v-if="loading" class="flex justify-center py-20">
+      <div class="h-9 w-9 animate-spin rounded-full border-[3px] border-rose-primary border-t-transparent"></div>
+    </div>
+
+    <template v-else>
+      <div v-if="products.length === 0" class="soft-card mt-8 py-16 text-center">
+        <div class="text-4xl">✿</div>
+        <p class="mt-3 text-text-secondary">目前沒有可選購的花禮</p>
+      </div>
+
+      <div v-else class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <article
+          v-for="(product, idx) in products.slice(0, 4)"
+          :key="product.id"
+          class="group overflow-hidden rounded-[1.45rem] bg-paper shadow-[0_12px_32px_rgba(64,33,37,0.07)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(64,33,37,0.14)]"
+        >
+          <button @click="goToProduct(product.id)" class="block w-full text-left" :aria-label="'查看' + product.name" :data-testid="'featured-product-' + idx">
+            <div class="relative aspect-[4/4.35] overflow-hidden bg-blush">
+              <img :src="product.image_url || featuredImages[idx % 4]" :alt="product.name" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+              <span class="absolute left-3 top-3 rounded-full bg-paper/90 px-2.5 py-1 text-[10px] font-bold tracking-[0.1em] text-wine backdrop-blur">SEASONAL</span>
+            </div>
+          </button>
+          <div class="p-4">
+            <button @click="goToProduct(product.id)" class="block max-w-full text-left text-base font-bold text-wine transition hover:text-rose-primary">{{ product.name }}</button>
+            <div class="mt-2 flex items-end justify-between gap-2">
+              <p class="font-display text-lg font-bold text-rose-primary">NT$ {{ product.price.toLocaleString() }}</p>
+              <button @click.stop="addToCart(product)" :disabled="product._adding || product.stock <= 0" class="grid h-9 w-9 place-items-center rounded-full bg-wine text-base text-white transition hover:bg-rose-primary disabled:opacity-45" :aria-label="'加入' + product.name + '到購物車'" :data-testid="'home-add-to-cart-' + idx">
+                <span v-if="product._adding" class="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                <span v-else aria-hidden="true">＋</span>
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </template>
+  </section>
+
+  <section id="all-products" class="scroll-mt-32 pb-4">
+    <div class="flex items-center gap-4">
+      <h2 class="font-display whitespace-nowrap text-2xl font-bold tracking-[0.1em] text-wine">所有花禮</h2>
+      <span class="line-decoration"></span>
+    </div>
+    <div v-if="!loading && products.length" class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <article v-for="product in products" :key="product.id" class="soft-card group flex gap-4 p-3 transition hover:-translate-y-0.5">
+        <button @click="goToProduct(product.id)" class="h-24 w-24 shrink-0 overflow-hidden rounded-2xl bg-blush text-left sm:h-28 sm:w-28" :aria-label="'查看' + product.name">
+          <img :src="product.image_url || featuredImages[0]" :alt="product.name" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+        </button>
+        <div class="flex min-w-0 flex-1 flex-col justify-center py-1 pr-1">
+          <button @click="goToProduct(product.id)" class="truncate text-left text-sm font-bold text-wine transition hover:text-rose-primary">{{ product.name }}</button>
+          <p class="mt-2 text-sm font-bold text-rose-primary">NT$ {{ product.price.toLocaleString() }}</p>
+          <p class="mt-1 text-xs text-text-muted">{{ product.stock > 0 ? '花藝師新鮮製作' : '暫時售完' }}</p>
+        </div>
+      </article>
+    </div>
+    <div v-if="pagination.totalPages > 1" class="mt-8 flex justify-center gap-2">
+      <button v-for="p in pagination.totalPages" :key="p" @click="loadProducts(p)" class="grid h-9 w-9 place-items-center rounded-full text-sm font-bold transition" :class="p === pagination.page ? 'bg-wine text-white' : 'border border-[#e1d3cc] bg-paper text-text-secondary hover:border-rose-primary'">{{ p }}</button>
+    </div>
+  </section>
+</div>
