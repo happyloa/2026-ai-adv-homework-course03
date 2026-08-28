@@ -1,59 +1,32 @@
-# AI 開發進化營第二場作業｜繳交資料
+# AI 開發進化營第三場作業｜繳交資料
 
 ## 專案資訊
 
 | 項目 | 內容 |
 | --- | --- |
-| GitHub 儲存庫 | https://github.com/happyloa/2026-ai-adv-homework-course02 |
-| AI Agent | Codex CLI |
-| Design Skill | `.agents/skills/flower-commerce-design/SKILL.md` |
-| 設計工具 | OpenAI Image Generation（Codex imagegen） |
-| 設計稿與實作截圖 | `docs/design/` |
-| E2E Test Skill | `.agents/skills/e2e-payment-test/SKILL.md` |
-| 瀏覽器自動化工具 | Playwright + Google Chrome |
+| GitHub 儲存庫 | https://github.com/happyloa/2026-ai-adv-homework-course03 |
+| AI Agent | Codex |
+| 挑戰等級 | LV3 |
 | 作業系統 | Windows PowerShell |
 | Node.js | 24+ |
 
-## 挑戰一佐證
+## 環境變數名稱
 
-1. MCP 設計工具產生的設計概念稿：`docs/design/flower-life-design-concept.png`
-2. 依此設計稿完成的商品、購物袋、結帳、訂單確認與付款完成頁：請見 `docs/design/README.md`。
-3. 響應式設計驗證：`docs/design/implementation-product-desktop.jpg`、`implementation-checkout-desktop.jpg`、`implementation-payment-success-desktop.jpg` 與 `implementation-product-mobile.jpg`。
+`JWT_SECRET`、`BASE_URL`、`ECPAY_MERCHANT_ID`、`ECPAY_HASH_KEY`、`ECPAY_HASH_IV`、`ECPAY_ENV`，以及 E2E 可選的 `E2E_BASE_URL`。所有實際值都只存於本機 `.env` 或執行環境，未提交至 Git。
 
-## 挑戰二佐證
+## 自動化驗證
 
-1. 自動化測試：`tests/e2e/payment-flow.spec.js`
-2. 綠界回呼安全測試：`tests/ecpay.test.js`
-3. 執行指令：
-
-   ```powershell
-   npm test
-   npm run test:e2e
-   npm run recording:start
-   npm run recording:check
-   npm run recording:flow
-   npm run recording:stop
-   ```
-
-4. 真實綠界 staging 驗證：官方測試卡、3D OTP、ReturnURL callback、`paid` 訂單與付款完成頁。
-5. 實際錄影步驟：`docs/e2e/recording-checklist.md`
-6. E2E 測試影片：[YouTube｜第二場作業挑戰二 E2E 測試 Skill 與自動化測試錄影](https://youtu.be/_cfjs2AgADc)
-
-## 環境變數
-
-請依 `.env.example` 建立 `.env`；不要將 `.env` 提交到 Git。
-
-| 變數 | 用途 |
+| 項目 | 證據 |
 | --- | --- |
-| `JWT_SECRET` | 登入 JWT 簽章金鑰，必填。 |
-| `BASE_URL` | 網站公開網址；真正綠界測試與錄影時必須是可公開 HTTPS 網址。 |
-| `ECPAY_MERCHANT_ID` | 綠界特店編號。 |
-| `ECPAY_HASH_KEY` | 綠界 CheckMacValue 金鑰。 |
-| `ECPAY_HASH_IV` | 綠界 CheckMacValue IV。 |
-| `ECPAY_ENV` | `staging` 或 `production`；作業錄影請使用 `staging`。 |
+| 配送 Unit Test | `tests/unit/shipping.test.js`、`npm run test:unit` |
+| 訂單 Integration Test | `tests/integration/order-flow.test.js`、`npm run test:integration` |
+| E2E Test | `tests/e2e/payment-flow.spec.js`、`npm run test:e2e` |
+| OpenAPI | `openapi.json`、`npm run openapi` |
+| Postman Collection | `postman/flower-shop.postman_collection.json`、`npm run postman` |
+| GitHub Actions | https://github.com/happyloa/2026-ai-adv-homework-course03/actions |
 
-## 尚需本人完成的外部提交
+## 仍須本人完成的外部項目
 
-- [ ] 填寫第二場回饋表單，並將成功畫面截圖附在作業繳交表單。
-- [ ] 按照 `docs/e2e/recording-checklist.md` 錄製真實綠界測試與後台訂單畫面（後台 CAPTCHA 需本人輸入）。
-- [ ] 上傳公開影片並把連結填回本文件。
+- [ ] 填寫第三場回饋表單，並在繳交系統附上提交成功畫面截圖。
+- [ ] 將 GitHub Actions 成功畫面截圖附到繳交系統。
+- [ ] 若作業要求真實綠界 ATM 畫面，使用公開 HTTPS `BASE_URL` 完成 staging 流程並附上付款成功回站截圖。

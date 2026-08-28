@@ -3,7 +3,7 @@
 ## 目錄結構
 
 ```
-2026-ai-adv-homework-course01/
+2026-ai-adv-homework-course03/
 ├── app.js                    # Express app 設定、中介層、路由掛載
 ├── server.js                 # HTTP server 入口（port 3001）
 ├── vitest.config.js          # Vitest 測試設定
@@ -26,7 +26,8 @@
 │   │   ├── adminOrderRoutes.js   # 後台：訂單管理
 │   │   └── pageRoutes.js         # 頁面路由（EJS 渲染）
 │   └── utils/
-│       └── ecpay.js             # ECPay 工具函式（CMV 計算、表單產生）
+│       ├── ecpay.js             # ECPay 工具函式（CMV 計算、表單產生）
+│       └── shipping.js          # 純配送費用計算模組
 ├── views/
 │   ├── layouts/
 │   │   └── front.ejs            # 前台主版型
@@ -70,7 +71,7 @@
 
 ```
 前端點擊付款
-  → POST /api/orders/:id/pay
+  → POST /api/ecpay/pay/:orderId
   → 後端計算 CheckMacValue
   → 回傳自動提交的 HTML 表單
   → 瀏覽器 POST 至 ECPay 測試環境
@@ -130,7 +131,12 @@
 | recipient_name | TEXT | 收件人姓名 |
 | recipient_email | TEXT | 收件人信箱 |
 | recipient_address | TEXT | 收件地址 |
-| total_amount | INTEGER | 訂單總金額 |
+| subtotal_amount | INTEGER | 商品小計快照，不含運費 |
+| shipping_fee | INTEGER | 基本運費與附加費合計 |
+| shipping_method | TEXT | `home_delivery` 或 `cvs` |
+| is_remote_area | INTEGER | 是否套用偏遠地區附加費（0/1） |
+| is_express | INTEGER | 是否套用當日急件附加費（0/1） |
+| total_amount | INTEGER | 商品小計加運費後的訂單總額 |
 | status | TEXT | 'pending' / 'paid' / 'failed' |
 | created_at | TEXT | 建立時間 |
 
@@ -180,9 +186,14 @@
 | GET | / | 我的訂單列表 |
 | GET | /:id | 訂單詳情 |
 | POST | / | 建立訂單 |
-| POST | /:id/pay | 取得 ECPay 付款表單 |
-| POST | /ecpay/notify | ECPay ReturnURL（付款結果通知） |
-| ALL | /ecpay/result | ECPay 付款結果頁（前端跳轉，接收本地回傳 Fallback） |
+
+### 綠界 `/api/ecpay`
+
+| 方法 | 路徑 | 說明 |
+|------|------|------|
+| POST | /pay/:orderId | 取得 ECPay 付款表單 |
+| POST | /notify | ECPay ReturnURL（付款結果通知） |
+| ALL | /result | ECPay 付款結果頁（前端跳轉） |
 
 ### 後台 `/api/admin`
 
