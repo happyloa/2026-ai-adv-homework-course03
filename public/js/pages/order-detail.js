@@ -13,7 +13,18 @@ createApp({
     const paying = ref(false);
 
     const isPaymentComplete = computed(function () {
-      return order.value?.status === 'paid' || paymentResult.value === 'success';
+      return order.value?.status === 'paid';
+    });
+
+    const subtotalAmount = computed(function () {
+      if (Number.isInteger(order.value?.subtotal)) return order.value.subtotal;
+      return (order.value?.items || []).reduce(function (sum, item) {
+        return sum + item.product_price * item.quantity;
+      }, 0);
+    });
+
+    const shippingMethodLabel = computed(function () {
+      return order.value?.shipping_method === 'cvs' ? '超商取貨' : '宅配到府';
     });
 
     const statusMap = {
@@ -61,7 +72,18 @@ createApp({
       }
     });
 
-    return { order, loading, paying, paymentResult, isPaymentComplete, statusMap, paymentMessages, handleEcpay };
+    return {
+      order,
+      loading,
+      paying,
+      paymentResult,
+      isPaymentComplete,
+      subtotalAmount,
+      shippingMethodLabel,
+      statusMap,
+      paymentMessages,
+      handleEcpay
+    };
   }
 }).mount('#app');
 

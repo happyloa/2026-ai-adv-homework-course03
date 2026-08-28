@@ -11,7 +11,7 @@
   </div>
 
   <template v-else>
-    <div v-if="total < 500" class="mb-6 rounded-2xl border border-rose-primary/15 bg-blush/70 px-4 py-3 text-center text-sm text-rose-primary">再挑選 NT$ {{ (500 - total).toLocaleString() }}，即可享有免運配送。</div>
+    <div v-if="total < 1500" class="mb-6 rounded-2xl border border-rose-primary/15 bg-blush/70 px-4 py-3 text-center text-sm text-rose-primary">再挑選 NT$ {{ (1500 - total).toLocaleString() }}，即可享有基本運費免除優惠。</div>
     <div v-else class="mb-6 rounded-2xl border border-olive/15 bg-olive-light/60 px-4 py-3 text-center text-sm text-olive">✓ 已達免運門檻，這束花將免費送到你指定的地方。</div>
 
     <div class="grid gap-7 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.65fr)] lg:gap-10">
@@ -26,7 +26,7 @@
         </div>
       </section>
 
-      <aside class="h-fit lg:sticky lg:top-28"><div class="soft-card overflow-hidden"><div class="border-b border-[#eee3de] px-6 py-5"><h2 class="font-display text-xl font-bold tracking-[0.08em] text-wine">訂單摘要</h2></div><div class="space-y-3 px-6 py-5 text-sm"><div class="flex justify-between text-text-secondary"><span>商品小計</span><span>NT$ {{ total.toLocaleString() }}</span></div><div class="flex justify-between text-text-secondary"><span>配送運費</span><span>{{ total >= 500 ? '免運' : 'NT$ 150' }}</span></div><div class="flex items-end justify-between border-t border-[#eaded8] pt-4"><span class="font-bold text-wine">總計</span><span class="font-display text-2xl font-bold text-rose-primary">NT$ {{ (total + (total >= 500 ? 0 : 150)).toLocaleString() }}</span></div><button @click="goCheckout" class="primary-button mt-3 w-full" data-testid="cart-checkout">前往填寫配送資訊 <span aria-hidden="true">→</span></button></div></div><p class="mt-4 text-center text-xs text-text-muted">綠界科技 SSL 加密交易</p></aside>
+      <aside class="h-fit lg:sticky lg:top-28"><div class="soft-card overflow-hidden"><div class="border-b border-[#eee3de] px-6 py-5"><h2 class="font-display text-xl font-bold tracking-[0.08em] text-wine">訂單摘要</h2></div><div class="space-y-3 px-6 py-5 text-sm"><div class="flex justify-between text-text-secondary"><span>商品小計</span><span>NT$ {{ total.toLocaleString() }}</span></div><div class="flex justify-between text-text-secondary"><span>配送運費（宅配預估）</span><span>{{ total >= 1500 ? '免運' : 'NT$ 120' }}</span></div><p class="text-xs leading-5 text-text-muted">結帳時可選擇宅配或超商取貨，偏遠地區與當日急件附加費將依選項計算。</p><div class="flex items-end justify-between border-t border-[#eaded8] pt-4"><span class="font-bold text-wine">預估總計</span><span class="font-display text-2xl font-bold text-rose-primary">NT$ {{ (total + (total >= 1500 ? 0 : 120)).toLocaleString() }}</span></div><button @click="goCheckout" class="primary-button mt-3 w-full" data-testid="cart-checkout">前往填寫配送資訊 <span aria-hidden="true">→</span></button></div></div><p class="mt-4 text-center text-xs text-text-muted">綠界科技 SSL 加密交易</p></aside>
     </div>
   </template>
 

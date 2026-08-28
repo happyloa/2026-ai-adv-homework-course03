@@ -40,6 +40,26 @@
           <p v-if="errors.recipientAddress" class="mt-1.5 text-xs text-red-500">{{ errors.recipientAddress }}</p>
         </div>
 
+        <fieldset>
+          <legend class="field-label">配送方式 <span class="text-rose-primary">*</span></legend>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="flex cursor-pointer items-center gap-3 rounded-2xl border p-4 transition" :class="form.shippingMethod === 'home_delivery' ? 'border-rose-primary bg-blush/60' : 'border-[#dfd0ca] bg-paper'">
+              <input v-model="form.shippingMethod" type="radio" value="home_delivery" class="accent-[#9d4658]" data-testid="shipping-home-delivery" />
+              <span><span class="block text-sm font-bold text-wine">宅配到府</span><span class="mt-0.5 block text-xs text-text-muted">未滿 NT$ 1,500 運費 NT$ 120</span></span>
+            </label>
+            <label class="flex cursor-pointer items-center gap-3 rounded-2xl border p-4 transition" :class="form.shippingMethod === 'cvs' ? 'border-rose-primary bg-blush/60' : 'border-[#dfd0ca] bg-paper'">
+              <input v-model="form.shippingMethod" type="radio" value="cvs" class="accent-[#9d4658]" data-testid="shipping-cvs" />
+              <span><span class="block text-sm font-bold text-wine">超商取貨</span><span class="mt-0.5 block text-xs text-text-muted">未滿 NT$ 1,500 運費 NT$ 60</span></span>
+            </label>
+          </div>
+          <p v-if="errors.shippingMethod" class="mt-1.5 text-xs text-red-500">{{ errors.shippingMethod }}</p>
+
+          <div v-if="form.shippingMethod === 'home_delivery'" class="mt-3 space-y-2 rounded-2xl bg-[#fffaf7] p-4 text-sm text-text-secondary">
+            <label class="flex cursor-pointer items-center gap-2.5"><input v-model="form.isRemoteArea" type="checkbox" class="accent-[#9d4658]" data-testid="shipping-remote-area" /><span>偏遠地區（加收 NT$ 200）</span></label>
+            <label class="flex cursor-pointer items-center gap-2.5"><input v-model="form.isExpress" type="checkbox" class="accent-[#9d4658]" data-testid="shipping-express" /><span>當日急件（加收 NT$ 250）</span></label>
+          </div>
+        </fieldset>
+
         <div class="rounded-2xl bg-blush/70 px-4 py-4 text-xs leading-6 text-text-secondary">
           <p class="font-bold text-wine">貼心提醒</p>
           <p class="mt-1">請確認收件資訊正確；完成訂單後會前往綠界科技的加密付款頁面。</p>
@@ -67,8 +87,10 @@
         </div>
         <div class="space-y-3 border-t border-dashed border-[#e0d2cc] px-6 py-5 text-sm">
           <div class="flex justify-between text-text-secondary"><span>商品小計</span><span>NT$ {{ cartTotal.toLocaleString() }}</span></div>
-          <div class="flex justify-between text-text-secondary"><span>配送運費</span><span>{{ cartTotal >= 500 ? '免運' : 'NT$ 150' }}</span></div>
-          <div class="flex items-end justify-between border-t border-[#eaded8] pt-4"><span class="font-bold text-wine">總計</span><span class="font-display text-2xl font-bold text-rose-primary">NT$ {{ (cartTotal + (cartTotal >= 500 ? 0 : 150)).toLocaleString() }}</span></div>
+          <div class="flex justify-between text-text-secondary"><span>配送運費</span><span>{{ shippingFee.shippingFee === 0 ? '免運' : 'NT$ ' + shippingFee.shippingFee.toLocaleString() }}</span></div>
+          <div v-if="shippingFee.baseFee === 0" class="flex justify-between text-xs text-olive"><span>滿 NT$ 1,500，基本運費已免除</span><span>− NT$ {{ selectedBaseFee.toLocaleString() }}</span></div>
+          <div v-if="shippingFee.surcharge > 0" class="flex justify-between text-xs text-text-muted"><span>偏遠／急件附加費</span><span>NT$ {{ shippingFee.surcharge.toLocaleString() }}</span></div>
+          <div class="flex items-end justify-between border-t border-[#eaded8] pt-4"><span class="font-bold text-wine">總計</span><span class="font-display text-2xl font-bold text-rose-primary">NT$ {{ orderTotal.toLocaleString() }}</span></div>
         </div>
       </div>
       <div class="mt-4 flex items-center justify-center gap-2 text-xs text-text-muted"><span class="grid h-5 w-5 place-items-center rounded-full bg-olive-light text-olive">✓</span> 綠界科技 SSL 加密交易</div>

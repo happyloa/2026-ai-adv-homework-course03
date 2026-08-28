@@ -91,6 +91,11 @@ function initializeDatabase() {
       recipient_name TEXT NOT NULL,
       recipient_email TEXT NOT NULL,
       recipient_address TEXT NOT NULL,
+      subtotal_amount INTEGER NOT NULL DEFAULT 0,
+      shipping_fee INTEGER NOT NULL DEFAULT 0,
+      shipping_method TEXT NOT NULL DEFAULT 'home_delivery' CHECK(shipping_method IN ('home_delivery', 'cvs')),
+      is_remote_area INTEGER NOT NULL DEFAULT 0 CHECK(is_remote_area IN (0, 1)),
+      is_express INTEGER NOT NULL DEFAULT 0 CHECK(is_express IN (0, 1)),
       total_amount INTEGER NOT NULL,
       status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'paid', 'failed')),
 
@@ -109,10 +114,45 @@ function initializeDatabase() {
     );
   `);
 
+  migrateOrdersShippingColumns();
+
   // Seed data
   seedAdminUser();
   seedProducts();
   migrateLegacyProductImages();
+}
+
+/**
+ * Existing local databases were created before shipping fields existed.
+ * Keep the migration idempotent so a developer can start the updated app
+ * without deleting their database.sqlite file.
+ */
+function migrateOrdersShippingColumns() {
+  const existingColumns = new Set(
+    db.prepare('PRAGMA table_info(orders)').all().map(column => column.name)
+  );
+  const columns = [
+    ['subtotal_amount', 'INTEGER NOT NULL DEFAULT 0'],
+    ['shipping_fee', 'INTEGER NOT NULL DEFAULT 0'],
+    [
+      'shipping_method',
+      "TEXT NOT NULL DEFAULT 'home_delivery' CHECK(shipping_method IN ('home_delivery', 'cvs'))"
+    ],
+    ['is_remote_area', 'INTEGER NOT NULL DEFAULT 0 CHECK(is_remote_area IN (0, 1))'],
+    ['is_express', 'INTEGER NOT NULL DEFAULT 0 CHECK(is_express IN (0, 1))']
+  ];
+
+  for (const [name, definition] of columns) {
+    if (!existingColumns.has(name)) {
+      db.exec(`ALTER TABLE orders ADD COLUMN ${name} ${definition}`);
+    }
+  }
+
+  // Legacy orders stored their product subtotal in total_amount. Preserve the
+  // historical total and make the new subtotal field useful for display.
+  db.prepare(
+    'UPDATE orders SET subtotal_amount = total_amount WHERE subtotal_amount = 0 AND total_amount > 0'
+  ).run();
 }
 
 function seedAdminUser() {

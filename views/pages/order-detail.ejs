@@ -36,7 +36,13 @@
               <p class="whitespace-nowrap text-sm font-bold text-text-secondary">NT$ {{ (item.product_price * item.quantity).toLocaleString() }}</p>
             </div>
           </div>
-          <div class="flex items-end justify-between border-t border-[#eaded8] bg-[#fffaf7] px-6 py-5 sm:px-7"><span class="font-bold text-wine">訂單總計</span><span class="font-display text-2xl font-bold text-rose-primary">NT$ {{ order.total_amount.toLocaleString() }}</span></div>
+          <div class="space-y-3 border-t border-[#eaded8] bg-[#fffaf7] px-6 py-5 text-sm sm:px-7">
+            <div class="flex justify-between text-text-secondary"><span>商品小計</span><span>NT$ {{ subtotalAmount.toLocaleString() }}</span></div>
+            <div class="flex justify-between text-text-secondary"><span>配送方式</span><span>{{ shippingMethodLabel }}</span></div>
+            <div class="flex justify-between text-text-secondary"><span>配送運費</span><span>{{ order.shipping_fee === 0 ? '免運' : 'NT$ ' + order.shipping_fee.toLocaleString() }}</span></div>
+            <div v-if="order.is_remote_area || order.is_express" class="text-xs text-text-muted">{{ order.is_remote_area ? '偏遠地區附加費' : '' }}{{ order.is_remote_area && order.is_express ? '・' : '' }}{{ order.is_express ? '當日急件附加費' : '' }}</div>
+            <div class="flex items-end justify-between border-t border-[#eaded8] pt-4"><span class="font-bold text-wine">訂單總計</span><span class="font-display text-2xl font-bold text-rose-primary">NT$ {{ order.total_amount.toLocaleString() }}</span></div>
+          </div>
         </section>
 
         <section class="soft-card px-6 py-6 sm:px-7">
@@ -45,6 +51,7 @@
             <div><dt class="text-xs text-text-muted">收件人</dt><dd class="mt-1 font-bold text-wine">{{ order.recipient_name }}</dd></div>
             <div><dt class="text-xs text-text-muted">Email</dt><dd class="mt-1 break-all text-text-secondary">{{ order.recipient_email }}</dd></div>
             <div><dt class="text-xs text-text-muted">收件地址</dt><dd class="mt-1 leading-6 text-text-secondary">{{ order.recipient_address }}</dd></div>
+            <div><dt class="text-xs text-text-muted">配送方式</dt><dd class="mt-1 font-bold text-wine">{{ shippingMethodLabel }}</dd></div>
           </dl>
         </section>
       </div>

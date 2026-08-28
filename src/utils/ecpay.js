@@ -120,8 +120,10 @@ function buildPaymentForm(order, merchantTradeNo) {
   const serverBaseUrl = process.env.BASE_URL || 'http://localhost:3001';
 
   // 商品名稱（最長 400 字元，避免被截斷）
-  const itemNames = (order.items || [])
-    .map(i => `${i.product_name} x${i.quantity}`)
+  const itemNames = [
+    ...(order.items || []).map(i => `${i.product_name} x${i.quantity}`),
+    ...(Number(order.shipping_fee) > 0 ? [`配送費 NT$${order.shipping_fee}`] : [])
+  ]
     .join('#')
     .slice(0, 390); // 保留安全長度
 

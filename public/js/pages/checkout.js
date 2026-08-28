@@ -1,4 +1,10 @@
-const { createApp, ref, computed, onMounted } = Vue;
+const { createApp, ref, computed, onMounted, watch } = Vue;
+
+const HOME_DELIVERY_BASE_FEE = 120;
+const CVS_FEE = 60;
+const FREE_SHIPPING_THRESHOLD = 1500;
+const REMOTE_AREA_SURCHARGE = 200;
+const EXPRESS_SURCHARGE = 250;
 
 createApp({
   setup() {
@@ -7,13 +13,42 @@ createApp({
     const loading = ref(true);
     const submitting = ref(false);
     const cartItems = ref([]);
-    const form = ref({ recipientName: '', recipientEmail: '', recipientAddress: '' });
+    const form = ref({
+      recipientName: '',
+      recipientEmail: '',
+      recipientAddress: '',
+      shippingMethod: 'home_delivery',
+      isRemoteArea: false,
+      isExpress: false
+    });
     const errors = ref({});
 
     const cartTotal = computed(function () {
       return cartItems.value.reduce(function (sum, item) {
         return sum + item.product.price * item.quantity;
       }, 0);
+    });
+
+    const selectedBaseFee = computed(function () {
+      return form.value.shippingMethod === 'cvs' ? CVS_FEE : HOME_DELIVERY_BASE_FEE;
+    });
+
+    const shippingFee = computed(function () {
+      const baseFee = cartTotal.value >= FREE_SHIPPING_THRESHOLD ? 0 : selectedBaseFee.value;
+      const surcharge = (form.value.isRemoteArea ? REMOTE_AREA_SURCHARGE : 0)
+        + (form.value.isExpress ? EXPRESS_SURCHARGE : 0);
+      return { baseFee, surcharge, shippingFee: baseFee + surcharge };
+    });
+
+    const orderTotal = computed(function () {
+      return cartTotal.value + shippingFee.value.shippingFee;
+    });
+
+    watch(() => form.value.shippingMethod, function (shippingMethod) {
+      if (shippingMethod === 'cvs') {
+        form.value.isRemoteArea = false;
+        form.value.isExpress = false;
+      }
     });
 
     function validate() {
@@ -25,6 +60,9 @@ createApp({
         errors.value.recipientEmail = 'Email 格式不正確';
       }
       if (!form.value.recipientAddress.trim()) errors.value.recipientAddress = '請輸入收件地址';
+      if (!['home_delivery', 'cvs'].includes(form.value.shippingMethod)) {
+        errors.value.shippingMethod = '請選擇配送方式';
+      }
       return Object.keys(errors.value).length === 0;
     }
 
@@ -60,7 +98,18 @@ createApp({
       loading.value = false;
     });
 
-    return { loading, submitting, cartItems, form, errors, cartTotal, submitOrder };
+    return {
+      loading,
+      submitting,
+      cartItems,
+      form,
+      errors,
+      cartTotal,
+      selectedBaseFee,
+      shippingFee,
+      orderTotal,
+      submitOrder
+    };
   }
 }).mount('#app');
 
