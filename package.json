@@ -11,10 +11,13 @@
     "dev:css": "npx @tailwindcss/cli -i public/css/input.css -o public/css/output.css --watch",
     "css:build": "npx @tailwindcss/cli -i public/css/input.css -o public/css/output.css --minify",
     "openapi": "node generate-openapi.js",
-    "test": "vitest run",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "vitest run --config vitest.unit.config.js",
+    "test:integration": "vitest run --config vitest.integration.config.js",
     "design:capture": "node scripts/capture-design.cjs",
     "test:e2e": "node scripts/run-e2e.cjs",
     "test:e2e:headed": "node scripts/run-e2e.cjs --headed",
+    "postman": "npm run openapi && node scripts/generate-postman.cjs",
     "recording:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-recording-environment.ps1",
     "recording:check": "node scripts/check-recording-readiness.cjs",
     "recording:flow": "node scripts/record-payment-flow.cjs",
@@ -34,6 +37,7 @@
   "devDependencies": {
     "@playwright/test": "^1.58.2",
     "@tailwindcss/cli": "^4.3.3",
+    "openapi-to-postmanv2": "^6.3.3",
     "supertest": "^7.2.2",
     "tailwindcss": "^4.3.3",
     "vitest": "^4.1.10"

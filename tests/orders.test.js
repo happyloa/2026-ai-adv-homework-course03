@@ -29,6 +29,7 @@ describe('Orders API', () => {
         recipientName: '測試收件人',
         recipientEmail: 'recipient@example.com',
         recipientAddress: '台北市測試路 123 號',
+        shippingMethod: 'home_delivery'
       });
 
     expect(res.status).toBe(201);
@@ -37,6 +38,9 @@ describe('Orders API', () => {
     expect(res.body).toHaveProperty('message');
     expect(res.body.data).toHaveProperty('id');
     expect(res.body.data).toHaveProperty('order_no');
+    expect(res.body.data).toHaveProperty('subtotal');
+    expect(res.body.data).toHaveProperty('shipping_fee', 0);
+    expect(res.body.data).toHaveProperty('shipping_method', 'home_delivery');
     expect(res.body.data).toHaveProperty('total_amount');
     expect(res.body.data).toHaveProperty('status', 'pending');
     expect(res.body.data).toHaveProperty('items');
@@ -54,6 +58,7 @@ describe('Orders API', () => {
         recipientName: '測試收件人',
         recipientEmail: 'recipient@example.com',
         recipientAddress: '台北市測試路 123 號',
+        shippingMethod: 'home_delivery'
       });
 
     expect(res.status).toBe(400);
@@ -68,6 +73,7 @@ describe('Orders API', () => {
         recipientName: '測試收件人',
         recipientEmail: 'recipient@example.com',
         recipientAddress: '台北市測試路 123 號',
+        shippingMethod: 'home_delivery'
       });
 
     expect(res.status).toBe(401);

@@ -5,6 +5,7 @@ describe('ECPay payment callback security', () => {
   let userToken;
   let orderId;
   let merchantTradeNo;
+  let orderTotal;
 
   beforeAll(async () => {
     const user = await registerUser({
@@ -27,9 +28,11 @@ describe('ECPay payment callback security', () => {
       .send({
         recipientName: '綠界收件人',
         recipientEmail: 'ecpay-recipient@example.com',
-        recipientAddress: '台北市綠界路 1 號'
+        recipientAddress: '台北市綠界路 1 號',
+        shippingMethod: 'home_delivery'
       });
     orderId = orderRes.body.data.id;
+    orderTotal = orderRes.body.data.total_amount;
 
     const payRes = await request(app)
       .post(`/api/ecpay/pay/${orderId}`)
@@ -56,7 +59,7 @@ describe('ECPay payment callback security', () => {
       RtnCode: '1',
       RtnMsg: 'Succeeded',
       TradeNo: 'E2E-SIGNED-TRADE-001',
-      TradeAmt: '1680',
+      TradeAmt: String(orderTotal),
       PaymentDate: '2026/07/26 12:00:00',
       PaymentType: 'Credit_CreditCard'
     };

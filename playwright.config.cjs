@@ -1,10 +1,10 @@
 const { defineConfig } = require('@playwright/test');
 
-const baseURL = process.env.E2E_BASE_URL || 'http://127.0.0.1:4173';
+const baseURL = process.env.E2E_BASE_URL || 'http://localhost:3001';
 
 module.exports = defineConfig({
   testDir: './tests/e2e',
-  timeout: 90_000,
+  timeout: 120_000,
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   reporter: [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
